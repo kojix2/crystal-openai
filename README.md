@@ -64,7 +64,7 @@ You can configure the environment using the following variables:
 > **Note**: **`....`** is not a syntax; it refers to the details that need to be provided before invoking these functions.
 
 
-### Audio (Whisper)
+### Audio (Whisper & Text-To-Speech)
 
 ```crystal
   # transcribe audio into the input language.
@@ -73,7 +73,12 @@ You can configure the environment using the following variables:
   # translate audio into English.
   client.translation(....)
 
+  # generate spoken audio (text -> speech). Returns IO containing binary audio (mp3 by default)
+  io = client.speech(OpenAI::SpeechRequest.new("gpt-4o-mini-tts", "Today is a wonderful day!", voice: "coral", instructions: "Cheerful"))
+  File.write("speech.mp3", io.gets_to_end)
 ```
+
+> Text-To-Speech supports voices like `alloy`, `ash`, `ballad`, `coral`, `echo`, `fable`, `nova`, `onyx`, `sage`, `shimmer` and formats such as `mp3` (default), `wav`, `pcm`, `opus`, `flac`, `aac`.
 
 ### Chat completions
 

@@ -49,6 +49,20 @@ module OpenAI
       }
     end
 
+    # API call to create spoken audio from input text (Text-To-Speech)
+    # Returns IO containing binary audio (mp3 by default, or as requested)
+    def speech(req : SpeechRequest) : IO
+      body = req.to_json
+      http_req = new_request("POST", instance_url("/audio/speech", req.model)) do |arg|
+        arg.body = body
+        # Inform server that body is JSON so it can parse `model` etc.
+        arg.headers.add("Content-Type", "application/json; charset=utf-8")
+        # We expect binary audio back (default mp3). Accept anything (server chooses) but prefer audio/*.
+        arg.headers.add("Accept", "audio/mpeg, audio/*; q=0.9, application/json; q=0.1")
+      end
+      send_request_raw(http_req)
+    end
+
     #######################
     #  Chat API
     #######################

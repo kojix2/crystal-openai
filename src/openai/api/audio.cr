@@ -68,4 +68,35 @@ module OpenAI
   record TranscriptionResponse, task : String?, language : String?, duration : Float64?, segments : Array(Segment)?, text : String? do
     include JSON::Serializable
   end
+
+  # =============================
+  # Text-To-Speech (Audio Speech)
+  # =============================
+  # Request body for /audio/speech endpoint (text -> spoken audio)
+  # Reference: https://platform.openai.com/docs/api-reference/audio/createSpeech
+  # Response is binary audio (mp3 by default) so we reuse Client#send_request_raw
+  class SpeechRequest
+    include JSON::Serializable
+
+    # ID of the model to use (e.g. "gpt-4o-mini-tts", "tts-1", "tts-1-hd")
+    property model : String
+
+    # The text to be turned into audio.
+    property input : String
+
+    # Built‑in voice (e.g. alloy, coral, ash, ballad, echo, fable, nova, onyx, sage, shimmer)
+    @[JSON::Field(omit_nil: true)]
+    property voice : String?
+
+    # Optional instructions to control tone, style, etc.
+    @[JSON::Field(omit_nil: true)]
+    property instructions : String?
+
+    # Desired audio format (mp3, wav, pcm, opus, flac, aac). Defaults to mp3 when nil.
+    @[JSON::Field(key: "response_format", omit_nil: true)]
+    property response_format : String?
+
+    def initialize(@model, @input, @voice = "alloy", @instructions = nil, @response_format = "mp3")
+    end
+  end
 end
